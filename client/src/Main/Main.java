@@ -24,10 +24,11 @@ public class Main extends Thread {
 
     Main main = new Main();
 
-    main.initSocket().initMain();
+    main.initSocket();
+    main.initMain();
   }
 
-  public Main initSocket () {
+  public void initSocket () {
     try {
       clientSocket = new ClientSocket();
       clientSocket.startConnection("localhost", 6666);
@@ -35,11 +36,9 @@ public class Main extends Thread {
     } catch (IOException e) {
       System.out.println(e.toString());
     }
-
-    return this;
   }
 
-  void initMain () {
+  public void initMain () {
     askUsername = new Modal("Enter your username", 300, 100);
     askUsername.setLayout(null);
 
@@ -51,7 +50,7 @@ public class Main extends Thread {
     setUsername.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed (ActionEvent e) {
-        if(usernameBox.getText().equals("")) {
+        if (usernameBox.getText().equals("")) {
           usernameBox.setBackground(new Colors().RED);
         } else {
           currentUser.setText(usernameBox.getText());
@@ -83,7 +82,7 @@ public class Main extends Thread {
     start();
   }
 
-  public void run() {
+  public void run () {
     while (true) {
       try {
         mainWindow.messagesArea.append(clientSocket.getIn() + "\n");
