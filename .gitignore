@@ -3,3 +3,5 @@
 /**/.vscode
 /**/lib
 /**/out
+/**/META-INF
+**/.DS_Store
