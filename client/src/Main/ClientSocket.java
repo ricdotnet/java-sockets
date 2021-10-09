@@ -19,8 +19,10 @@ public class ClientSocket {
     out.println(username);
   }
 
-  public void closeConnection() {
+  public void closeConnection(String username) {
     try {
+      out.println("closing" + "\n" + username);
+//      out.println(username);
       clientSocket.close();
       in.close();
       out.close();

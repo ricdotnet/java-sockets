@@ -35,7 +35,8 @@ public class Main extends Thread {
   public void initSocket () {
     try {
       clientSocket = new ClientSocket();
-      clientSocket.startConnection("admin.rrocha.uk", 6666, usernameBox.getText());
+//      clientSocket.startConnection("admin.rrocha.uk", 6666, usernameBox.getText());
+      clientSocket.startConnection("localhost", 6666, usernameBox.getText());
       online = true;
     } catch (IOException e) {
       System.out.println(e.toString());
@@ -57,7 +58,7 @@ public class Main extends Thread {
         if (usernameBox.getText().equals("")) {
           usernameBox.setBackground(new Colors().RED);
         } else {
-          currentUser.setText("Username: " + usernameBox.getText());
+          currentUser.setText(usernameBox.getText());
           askUsername.setVisible(false);
           mainWindow.setVisible(true);
           initSocket();
@@ -111,7 +112,7 @@ public class Main extends Thread {
 
       @Override
       public void windowClosing (WindowEvent e) {
-        clientSocket.closeConnection();
+        clientSocket.closeConnection(usernameBox.getText());
       }
 
       @Override

@@ -33,19 +33,30 @@ public class ClientHandler extends Thread {
   public void run() {
     while (true) {
 
-      for(Socket user : Server.users.keySet()) {
-        if(user.isClosed())
-          Server.users.remove(user);
-      }
-
       if (Server.users.size() > 0) {
         try {
 
           String msg = in.readLine();
 
           if(msg.equals("closing")) {
-            String user = Server.users.get(clientSocket);
-            Server.users.remove(clientSocket);
+            String userToRemove = in.readLine();
+            Socket removeThis = null;
+            for(Socket user : Server.users.keySet()) {
+              if(userToRemove.equals(Server.users.get(user)))
+                removeThis = user;
+            }
+
+            System.out.println("User disconnected: " + userToRemove);
+
+            StringBuilder listOfUsers = onlineUsers();
+            for (Socket user : Server.users.keySet()) {
+              PrintWriter bc = new PrintWriter(user.getOutputStream(), true);
+              bc.println("newUser");
+              bc.println(listOfUsers);
+              bc.println("finished");
+              bc.println("Say bye to " + userToRemove);
+            }
+            Server.users.remove(removeThis);
           } else
 
           if (!msg.equals("")) {
@@ -55,6 +66,7 @@ public class ClientHandler extends Thread {
 
               PrintWriter bc = new PrintWriter(user.getOutputStream(), true);
               bc.println(msg);
+              System.out.println(Server.users.size());
             }
           } else {
 
