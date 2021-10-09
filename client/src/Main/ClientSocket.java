@@ -1,7 +1,5 @@
 package Main;
 
-import Models.Message;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,20 +12,25 @@ public class ClientSocket {
   private BufferedReader in;
   private PrintWriter out;
 
-  public void startConnection(String hostname, int port) throws IOException {
+  public void startConnection(String hostname, int port, String username) throws IOException {
     clientSocket = new Socket(hostname, port);
     out = new PrintWriter(clientSocket.getOutputStream(), true);
     in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+    out.println(username);
   }
 
-  public void closeConnection() throws IOException {
-    clientSocket.close();
-    in.close();
-    out.close();
+  public void closeConnection() {
+    try {
+      clientSocket.close();
+      in.close();
+      out.close();
+    } catch (IOException e) {
+      System.out.println(e.toString());
+    }
   }
 
-  public void sendMessage(String message) {
-    out.println(message);
+  public void sendMessage(String username, String message) {
+    out.println(username + ": " + message);
   }
 
   public String getIn() throws IOException {

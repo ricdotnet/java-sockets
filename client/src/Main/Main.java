@@ -6,6 +6,8 @@ import Utils.Colors;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 
 public class Main extends Thread {
@@ -24,14 +26,14 @@ public class Main extends Thread {
 
     Main main = new Main();
 
-    main.initSocket();
+    // main.initSocket();
     main.initMain();
   }
 
   public void initSocket () {
     try {
       clientSocket = new ClientSocket();
-      clientSocket.startConnection("localhost", 6666);
+      clientSocket.startConnection("localhost", 6666, usernameBox.getText());
       online = true;
     } catch (IOException e) {
       System.out.println(e.toString());
@@ -55,13 +57,15 @@ public class Main extends Thread {
         } else {
           currentUser.setText(usernameBox.getText());
           askUsername.setVisible(false);
+          initSocket();
+          start();
         }
       }
     });
 
     askUsername.add(setUsername);
     askUsername.add(usernameBox);
-//    askUsername.setVisible(true);
+    askUsername.setVisible(true);
     askUsername.setAlwaysOnTop(true);
 
     mainWindow = new MainWindow();
@@ -70,16 +74,59 @@ public class Main extends Thread {
     mainWindow.add(currentUser);
     mainWindow.setVisible(true);
 
+    mainWindow.messageBox.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed (ActionEvent e) {
+        clientSocket.sendMessage(currentUser.getText(), mainWindow.messageBox.getText());
+        mainWindow.messageBox.setText("");
+      }
+    });
+
     mainWindow.sendMessage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed (ActionEvent e) {
-        clientSocket.sendMessage(mainWindow.messageBox.getText());
+        clientSocket.sendMessage(currentUser.getText(), mainWindow.messageBox.getText());
 //        mainWindow.messagesArea.append(message + "\n");
         mainWindow.messageBox.setText("");
       }
     });
 
-    start();
+    mainWindow.addWindowListener(new WindowListener() {
+      @Override
+      public void windowOpened (WindowEvent e) {
+
+      }
+
+      @Override
+      public void windowClosing (WindowEvent e) {
+        clientSocket.closeConnection();
+      }
+
+      @Override
+      public void windowClosed (WindowEvent e) {
+
+      }
+
+      @Override
+      public void windowIconified (WindowEvent e) {
+
+      }
+
+      @Override
+      public void windowDeiconified (WindowEvent e) {
+
+      }
+
+      @Override
+      public void windowActivated (WindowEvent e) {
+
+      }
+
+      @Override
+      public void windowDeactivated (WindowEvent e) {
+
+      }
+    });
   }
 
   public void run () {

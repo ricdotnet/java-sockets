@@ -14,35 +14,46 @@ public class ClientHandler extends Thread {
   public ClientHandler(Socket socket) throws Exception {
     this.clientSocket = socket;
 
+    System.out.println("asjhsdf");
+
     out = new PrintWriter(clientSocket.getOutputStream(), true);
     in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-    System.out.println("New client connected...");
-    String username = randomUsername();
-    Server.users.put(username, clientSocket);
-
-    System.out.println(Server.users.size());
+    String username = in.readLine();
+    System.out.println("New user connected: " + username);
+    Server.users.put(clientSocket, username);
 
     start();
   }
 
   public void run() {
     while (true) {
+
+      for(Socket user : Server.users.keySet()) {
+        if(user.isClosed())
+          Server.users.remove(user);
+      }
+
       if (Server.users.size() > 0) {
         try {
 
           String msg = in.readLine();
-          // while((msg = in.readLine()) != null) {
-          // out.println(msg);
+
+          if(msg.equals("closing")) {
+            String user = Server.users.get(clientSocket);
+            Server.users.remove(clientSocket);
+          } else
 
           if (!msg.equals("")) {
-            for (String user : Server.users.keySet()) {
-              Socket curSocket = Server.users.get(user);
-              PrintWriter bc = new PrintWriter(curSocket.getOutputStream(), true);
+            for (Socket user : Server.users.keySet()) {
+//              Socket curSocket = Server.users.get(user);
+//              String username = Server.users.get(user);
+
+              PrintWriter bc = new PrintWriter(user.getOutputStream(), true);
               bc.println(msg);
             }
           } else {
-            
+
           }
 
           // in.close();

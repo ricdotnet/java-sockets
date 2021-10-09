@@ -8,7 +8,7 @@ public class Server {
 
   private final int PORT = 6666;
 
-  public static HashMap<String, Socket> users = new HashMap<>();
+  public static HashMap<Socket, String> users = new HashMap<>();
 
   public static void main(String[] args) throws Exception {
     Server app = new Server();
@@ -20,8 +20,9 @@ public class Server {
     try {
       serverSocket = new ServerSocket(PORT);
 
-      while (true)
+      while (true) {
         new ClientHandler(serverSocket.accept());
+      }
 
     } catch (IOException e) {
       System.out.println(e.toString());
