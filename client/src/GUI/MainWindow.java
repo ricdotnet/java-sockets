@@ -6,6 +6,8 @@ import Utils.Colors;
 
 public class MainWindow extends JFrame {
 
+  public Online onlineBox = new Online();
+
   public JTextField messageBox = new JTextField();
   public JButton sendMessage = new JButton();
 
@@ -13,13 +15,13 @@ public class MainWindow extends JFrame {
 
   public MainWindow() {
     this.setLayout(null);
-    this.setSize(500, 500);
+    this.setSize(700, 500);
     this.setLocationRelativeTo(null);
     this.setTitle("Chat Client");
     this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
     messageBox.setSize(480, 30);
-    messageBox.setLocation(10, 20);
+    messageBox.setLocation(10, 40);
     messageBox.setBackground(new Colors().RED);
     messageBox.setBorder(null);
     messageBox.setForeground(new Colors().WHITE);
@@ -29,7 +31,8 @@ public class MainWindow extends JFrame {
     sendMessage.setText("Send");
 
     this.add(messageBox);
-    this.add(sendMessage);
+//    this.add(sendMessage);
+    this.add(onlineBox);
 
     this.add(messagesArea);
   }

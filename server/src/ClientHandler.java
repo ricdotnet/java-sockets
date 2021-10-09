@@ -1,27 +1,31 @@
 import java.net.*;
 import java.io.*;
-import java.util.*;
 
 public class ClientHandler extends Thread {
 
   private Socket clientSocket;
-  private PrintWriter out;
+  private BufferedWriter out;
   private BufferedReader in;
-
-  private String[] chars = { "a", "b", "c", "d", "e", "f", "g", "h" };
-  private Random rand = new Random();
 
   public ClientHandler(Socket socket) throws Exception {
     this.clientSocket = socket;
 
-    System.out.println("asjhsdf");
-
-    out = new PrintWriter(clientSocket.getOutputStream(), true);
+//    out = new PrintWriter(clientSocket.getOutputStream(), true);
+    out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
     in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
     String username = in.readLine();
     System.out.println("New user connected: " + username);
     Server.users.put(clientSocket, username);
+    StringBuilder listOfUsers = onlineUsers();
+
+    for(Socket user : Server.users.keySet()) {
+      PrintWriter sendNewUser = new PrintWriter(user.getOutputStream(), true);
+      sendNewUser.println("newUser");
+      sendNewUser.println(listOfUsers);
+      sendNewUser.println("finished");
+      sendNewUser.println("Say hello to " + username);
+    }
 
     start();
   }
@@ -66,13 +70,18 @@ public class ClientHandler extends Thread {
     }
   }
 
-  public String randomUsername() {
-    StringBuilder temp = new StringBuilder();
-    for (int i = 0; i < 10; i++) {
-      temp.append(chars[rand.nextInt(chars.length)]);
+  public StringBuilder onlineUsers() {
+    int index = 0;
+    StringBuilder listOfUsers = new StringBuilder();
+    for(Socket user : Server.users.keySet()) {
+      String username = Server.users.get(user);
+      listOfUsers.append(username).append("\n");
+//      index++;
+//      if(index < Server.users.size()) {
+//        listOfUsers.append("\n");
+//      }
     }
-
-    return temp.toString();
+    return listOfUsers;
   }
 
 }

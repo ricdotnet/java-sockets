@@ -17,6 +17,8 @@ public class Main extends Thread {
   JTextField usernameBox = new JTextField();
   JButton setUsername = new JButton();
   JLabel currentUser = new JLabel();
+  JLabel onlineUsers = new JLabel();
+  JLabel sendMessageTip = new JLabel();
 
   ClientSocket clientSocket;
 
@@ -33,7 +35,7 @@ public class Main extends Thread {
   public void initSocket () {
     try {
       clientSocket = new ClientSocket();
-      clientSocket.startConnection("localhost", 6666, usernameBox.getText());
+      clientSocket.startConnection("admin.rrocha.uk", 6666, usernameBox.getText());
       online = true;
     } catch (IOException e) {
       System.out.println(e.toString());
@@ -55,13 +57,21 @@ public class Main extends Thread {
         if (usernameBox.getText().equals("")) {
           usernameBox.setBackground(new Colors().RED);
         } else {
-          currentUser.setText(usernameBox.getText());
+          currentUser.setText("Username: " + usernameBox.getText());
           askUsername.setVisible(false);
+          mainWindow.setVisible(true);
           initSocket();
           start();
         }
       }
     });
+
+    onlineUsers.setLocation(510, 10);
+    onlineUsers.setSize(180, 20);
+    onlineUsers.setText("Online Users");
+    sendMessageTip.setText("Write message and press Enter");
+    sendMessageTip.setSize(500, 20);
+    sendMessageTip.setLocation(10, 10);
 
     askUsername.add(setUsername);
     askUsername.add(usernameBox);
@@ -69,10 +79,12 @@ public class Main extends Thread {
     askUsername.setAlwaysOnTop(true);
 
     mainWindow = new MainWindow();
-    currentUser.setLocation(150, 60);
+    currentUser.setLocation(10, 70);
     currentUser.setSize(150, 20);
     mainWindow.add(currentUser);
-    mainWindow.setVisible(true);
+    mainWindow.add(onlineUsers);
+    mainWindow.add(sendMessageTip);
+//    mainWindow.setVisible(true);
 
     mainWindow.messageBox.addActionListener(new ActionListener() {
       @Override
@@ -132,7 +144,17 @@ public class Main extends Thread {
   public void run () {
     while (true) {
       try {
-        mainWindow.messagesArea.append(clientSocket.getIn() + "\n");
+
+        String incoming = clientSocket.getIn();
+        if (incoming.equals("newUser")) {
+          mainWindow.onlineBox.setText("");
+          while(!(incoming = clientSocket.getIn()).equals("finished")) {
+            mainWindow.onlineBox.append(incoming + "\n");
+          }
+//          mainWindow.onlineBox.append(clientSocket.getIn() + "\n");
+        } else {
+          mainWindow.messagesArea.append(incoming + "\n");
+        }
       } catch (Exception e) {
         System.out.println(e.toString());
       }
